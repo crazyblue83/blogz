@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>{{ title }}</title>
+    <style>
+    .error {
+        color: red
+    }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/newpost">Add Blog Entry</a> |
+    <a href="/blog">Main Blog Page</a> |
+    <a href="./logout">log out</a> |
+    <a href="./">Home</a>
+</nav>
+{%  with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <ul>
+            {%  for category, message in messages %}
+                <li class="{{ category }}">{{ messages }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+{% block content %}
+{% endblock %}
+
+</body>
+</html>
