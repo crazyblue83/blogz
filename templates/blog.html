@@ -11,13 +11,23 @@
         <div>
             {% for entry in entries %}
                 <h3>
+<<<<<<< HEAD
                     <a href="./blog?id={{ entry.id }}">{{ entry.title }}</a>
                 </h3>
                 <p>{{ entry.body }}</p>
                 <hr/>
+=======
+                    <a href ="./blog?id={{ entry.id }}">{{ entry.title }}</a>
+                </h3>
+                <p>{{ entry.body }}</p>
+                <hr />
+>>>>>>> 7951589467c3e9777de32f60bb7c55e76346cb44
             {% endfor %}
         </div>
 
     {% endif %}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7951589467c3e9777de32f60bb7c55e76346cb44
 {% endblock %}
