@@ -20,7 +20,7 @@ class Blog(db.Model):
     def __init__(self, title, body, owner, date=None):
         self.title = title
         self.body = body
-        self.owner = owner
+        self.owner_id = owner
         if date is None:
             date = datetime.utcnow()
         self.date = date
@@ -30,7 +30,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120))
     password = db.Column(db.String(120))
-    blogs = db.relationship('Blog', backref='user')
+    blogs = db.relationship('Blog', backref='owner')
 
     def __init__(self, username, password):
         self.username = username
@@ -51,11 +51,11 @@ def index():
         username = User.query.get(user_id)
         return render_template('index.html', title="Users", username=username)
     
-#    elif request.args:
+#    elif request.    :
 #        user_id = request.args.get('owner_id')
 #        userId = Blog.query.get(user_id)
     
-#    return render_template('solouser.html', title="Entries", userId=userId)
+#    return render_template('singleUser.html', title="Entries", userId=userId)
 
     usernames = User.query.order_by(User.id.desc()).all()
     return render_template('index.html', title="Blogz!", usernames=usernames)
@@ -81,16 +81,24 @@ def login():
 @app.route('/blog', methods=['GET'])
 def blog():
     if request.args:
-        blog_id = request.args.get('id')
-        entry = Blog.query.get(blog_id)
-        return render_template('soloentry.html', title="Entry", entry=entry)
+        owner_id = request.args.get('user_id')
+        blog_id = request.args.get('blog_id')
+        
+        if owner_id != None:
+            entries = Blog.query.filter_by(owner_id=owner_id)
+            user = User.query.get(owner_id)
+            return render_template('singleUser.html', title="Entry", entries=entries, user=user)
+        
+        elif blog_id != None:
+            blog_entry = Blog.query.get(blog_id)
+            return render_template('soloentry.html', title="Entry", entry=blog_entry)
     #if request.args:
         #users = request.args.get('owner_id')
         #userId = Blog.query.get('users')
     #return render_template('solouser.html', title="Entries", userId=userId)
 
     # show all blog posts
-    entries = Blog.query.order_by(Blog.date.desc()).all()
+    entries = db.engine.execute('SELECT *, blog.id as blog_id, user.id as user_id FROM user join blog on blog.owner_id=user.id').fetchall()
     return render_template('blog.html', title="Blogz!", entries=entries)
 
 @app.route('/newpost', methods=['GET', 'POST'])
@@ -99,7 +107,7 @@ def newpost():
         entry_name = request.form['title']
         new_body = request.form['entry']
         username = session['username']
-
+        
         user = User.query.filter_by(username=username).first()
         owner_id = user.id
         new_entry = Blog(entry_name, new_body, owner_id)
@@ -107,7 +115,7 @@ def newpost():
         db.session.add(new_entry)
         db.session.commit()
         return redirect('/blog')
-
+    
     return render_template('newpost.html', title="New Post")
 
 

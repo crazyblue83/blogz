@@ -3,11 +3,12 @@
 {% block content %}
 
         <div>
-            {% for users in userId %}
+            {% for entry in entries %}
                 <h3>
-                    <a href="./blog?user={{ userId }}">{{ entry.title }}</a>
+                    <a href="./blog?blog_id={{ entry.id }}">{{ entry.title }}</a>
                 </h3>
                 <p>{{ entry.body }}</p>
+                    <p>written by<a href="./blog?user_id={{ user.id }}">{{ user.username }}</a></p>
                 <hr/>
             {% endfor %}
         </div>
